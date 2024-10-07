@@ -505,7 +505,21 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    foodList = foodGrid.asList() #Devuelve las posiciones de la comida en una lista
+    if not foodList: #No hay comida que buscar
+        return 0
+    # Calcular la distancia de Manhattan a la comida más cercana
+    min_distance = float('inf')  # Inicializar a infinito
+    for food in foodList:
+        distance = abs(position[0] - food[0]) + abs(position[1] - food[1])
+        if distance < min_distance:
+            min_distance = distance
+
+    # Contar la cantidad de comida restante
+    remaining_food = len(foodList)
+
+    # Combinar ambas métricas de manera que no sobrestime
+    return min_distance + (remaining_food - 1)
 
 
 class ClosestDotSearchAgent(SearchAgent):
