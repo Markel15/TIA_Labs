@@ -384,7 +384,25 @@ def cornersHeuristic(state, problem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0  # Default to trivial solution
+    corners = problem.corners  # Coordenadas de las esquinas
+    walls = problem.walls  # Paredes del laberinto
+
+    # Posición actual y estado de las esquinas visitadas
+    current_position, *corners_visited = state
+
+    # Lista de esquinas no visitadas
+    unvisited_corners = [corner for i, corner in enumerate(corners) if not corners_visited[i]]
+
+    if not unvisited_corners:
+        return 0  # Todas las esquinas han sido visitadas
+
+    # Calcular la distancia Manhattan a la esquina más lejana no visitada
+    max_distance = max(
+        abs(current_position[0] - corner[0]) + abs(current_position[1] - corner[1])
+        for corner in unvisited_corners
+    )
+
+    return max_distance
 
 
 class AStarCornersAgent(SearchAgent):
