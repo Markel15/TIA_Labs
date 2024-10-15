@@ -284,34 +284,119 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
-      Your expectimax agent (question 4)
+    Your expectimax agent (question 4)
     """
 
-    def getAction(self, gameState):
+    def getAction(self, game_state):
         """
         Returns the expectimax action using self.depth and self.evaluationFunction
-
-        All ghosts should be modeled as choosing uniformly at random from their
-        legal moves.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.expectimax(game_state, 0, self.depth)[1]
+
+    def expectimax(self, game_state, agentIndex, depth):
+        if depth == 0 or game_state.isWin() or game_state.isLose():
+            return self.evaluationFunction(game_state), None
+
+        if agentIndex == 0:  # Pacman (Maximizing agent)
+            return self.max_value(game_state, agentIndex, depth)
+        else:  # Ghosts (Expectimax on minimizing agents)
+            return self.exp_value(game_state, agentIndex, depth)
+
+    def max_value(self, game_state, agentIndex, depth):
+        v = float('-inf')
+        best_accion = None
+
+        acciones = game_state.getLegalActions(agentIndex)
+        if not acciones:
+            return self.evaluationFunction(game_state), None
+
+        next_agentIndex = (agentIndex + 1) % game_state.getNumAgents()
+        new_depth = depth if next_agentIndex != 0 else depth - 1
+
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            sucesor_v = self.expectimax(sucesor, next_agentIndex, new_depth)[0]
+
+            if sucesor_v > v:
+                v = sucesor_v
+                best_accion = accion
+
+        return v, best_accion
+
+    def exp_value(self, game_state, agentIndex, depth):
+        v = 0  # Valor esperado
+
+        acciones = game_state.getLegalActions(agentIndex)
+        if not acciones:
+            return self.evaluationFunction(game_state), None
+
+        next_agentIndex = (agentIndex + 1) % game_state.getNumAgents()
+        new_depth = depth if next_agentIndex != 0 else depth - 1
+
+        probabilidad = 1.0 / len(acciones)  # Probabilidad uniforme para cada acción
+
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            sucesor_v = self.expectimax(sucesor, next_agentIndex, new_depth)[0]
+            v += probabilidad * sucesor_v  # Suma del valor esperado
+
+        return v, None
 
 
 def betterEvaluationFunction(currentGameState):
     """
-    Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
-    evaluation function (question 5).
-
-    DESCRIPTION: <write something here so we know what you did>
+    Your extreme, unstoppable evaluation function (question 5).
     """
-    pacman_pos = currentGameState.getPacmanPosition()
-    newFood = currentGameState.getFood()
-    newGhostStates = currentGameState.getGhostStates()
-    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+    # Información útil que podemos extraer del estado actual
+    pacmanPos = currentGameState.getPacmanPosition()
+    foodGrid = currentGameState.getFood()
+    ghostStates = currentGameState.getGhostStates()
+    scaredTimes = [ghostState.scaredTimer for ghostState in ghostStates]
 
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # 1. Calcular la distancia a la comida más cercana
+    food_positions = foodGrid.asList()
+    if len(food_positions) > 0:
+        min_food_distance = min(manhattanDistance(pacmanPos, food) for food in food_positions)
+    else:
+        min_food_distance = 0  # Si no queda comida, distancia mínima es 0
+
+    # 2. Calcular la distancia a los fantasmas y manejar el estado de asustado
+    min_ghost_distance = float('inf')
+    ghost_penalty = 0
+    for i, ghost in enumerate(ghostStates):
+        ghostPos = ghost.getPosition()
+        ghost_distance = manhattanDistance(pacmanPos, ghostPos)
+
+        if scaredTimes[i] > 0:  # El fantasma está asustado, podemos ir a por él
+            ghost_penalty += 200 / (ghost_distance + 1)  # Más cerca = más incentivo
+        else:  # El fantasma no está asustado, hay que evitarlo
+            min_ghost_distance = min(min_ghost_distance, ghost_distance)
+
+    # Penalización por estar demasiado cerca de un fantasma no asustado
+    if min_ghost_distance < 2:
+        ghost_penalty -= 1000  # Gran penalización si estamos muy cerca de un fantasma peligroso
+
+    # 3. Considerar la cantidad de comida restante
+    remaining_food = currentGameState.getNumFood()
+
+    # 4. Considerar las cápsulas de energía
+    capsules = currentGameState.getCapsules()
+    num_capsules = len(capsules)
+    capsule_bonus = 0
+    if num_capsules > 0:
+        capsule_bonus = 100 / min(manhattanDistance(pacmanPos, capsule) for capsule in capsules)
+
+    # 5. Calcular la puntuación final
+    score = currentGameState.getScore()
+    evaluation = (
+            score  # Valor del estado actual
+            + 1.0 / (min_food_distance + 1)  # Incentivar acercarse a la comida
+            + ghost_penalty  # Incentivar evitar fantasmas o cazarlos si están asustados
+            - 4 * remaining_food  # Penalizar por la cantidad de comida que queda
+            + capsule_bonus  # Bonificación por acercarse a las cápsulas
+    )
+
+    return evaluation
 
 
 # Abbreviation
