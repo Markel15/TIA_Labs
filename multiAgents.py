@@ -217,8 +217,68 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.alphabeta(game_state, 0, self.depth, float('-inf'), float('inf'))[1]
+
+    def alphabeta(self, game_state, agentIndex, depth, alpha, beta):
+        if depth == 0 or game_state.isWin() or game_state.isLose():
+            return self.evaluationFunction(game_state), None
+
+        if agentIndex == 0:  # Pacman (maximizing player)
+            return self.max_value(game_state, agentIndex, depth, alpha, beta)
+        else:  # Ghosts (minimizing players)
+            return self.min_value(game_state, agentIndex, depth, alpha, beta)
+
+    def max_value(self, game_state, agentIndex, depth, alpha, beta):
+        v = float('-inf')
+        best_accion = None
+
+        acciones = game_state.getLegalActions(agentIndex)
+        if not acciones:
+            return self.evaluationFunction(game_state), None
+
+        next_agentIndex = (agentIndex + 1) % game_state.getNumAgents()
+        new_depth = depth if next_agentIndex != 0 else depth - 1
+
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            sucesor_v = self.alphabeta(sucesor, next_agentIndex, new_depth, alpha, beta)[0]
+
+            if sucesor_v > v:
+                v = sucesor_v
+                best_accion = accion
+
+            if v > beta:  # Poda
+                return v, best_accion
+
+            alpha = max(alpha, v)
+
+        return v, best_accion
+
+    def min_value(self, game_state, agentIndex, depth, alpha, beta):
+        v = float('inf')
+        best_accion = None
+
+        acciones = game_state.getLegalActions(agentIndex)
+        if not acciones:
+            return self.evaluationFunction(game_state), None
+
+        next_agentIndex = (agentIndex + 1) % game_state.getNumAgents()
+        new_depth = depth if next_agentIndex != 0 else depth - 1
+
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            sucesor_v = self.alphabeta(sucesor, next_agentIndex, new_depth, alpha, beta)[0]
+
+            if sucesor_v < v:
+                v = sucesor_v
+                best_accion = accion
+
+            if v < alpha:  # Poda
+                return v, best_accion
+
+            beta = min(beta, v)
+
+        return v, best_accion
 
 
 
