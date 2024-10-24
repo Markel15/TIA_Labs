@@ -353,7 +353,7 @@ def betterEvaluationFunction(currentGameState):
     ghostStates = currentGameState.getGhostStates()
     scaredTimes = [ghostState.scaredTimer for ghostState in ghostStates]
 
-    # 1. Calcular la distancia a la comida más cercana
+    # Calcular la distancia a la comida más cercana
     food_positions = foodGrid.asList()
     if len(food_positions) > 0:
         min_food_distance = min(manhattanDistance(pacmanPos, food) for food in food_positions)
