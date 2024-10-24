@@ -291,15 +291,15 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         """
         Returns the expectimax action using self.depth and self.evaluationFunction
         """
-        return self.expectimax(game_state, 0, self.depth)[1]
+        return self.value(game_state, 0, self.depth)[1]
 
-    def expectimax(self, game_state, agentIndex, depth):
+    def value(self, game_state, agentIndex, depth):
         if depth == 0 or game_state.isWin() or game_state.isLose():
             return self.evaluationFunction(game_state), None
 
-        if agentIndex == 0:  # Pacman (Maximizing agent)
+        if agentIndex == 0:  # Pacman
             return self.max_value(game_state, agentIndex, depth)
-        else:  # Ghosts (Expectimax on minimizing agents)
+        else:  # Fantasmas
             return self.exp_value(game_state, agentIndex, depth)
 
     def max_value(self, game_state, agentIndex, depth):
@@ -315,7 +315,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
         for accion in acciones:
             sucesor = game_state.generateSuccessor(agentIndex, accion)
-            sucesor_v = self.expectimax(sucesor, next_agentIndex, new_depth)[0]
+            sucesor_v = self.value(sucesor, next_agentIndex, new_depth)[0]
 
             if sucesor_v > v:
                 v = sucesor_v
@@ -337,8 +337,8 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
         for accion in acciones:
             sucesor = game_state.generateSuccessor(agentIndex, accion)
-            sucesor_v = self.expectimax(sucesor, next_agentIndex, new_depth)[0]
-            v += probabilidad * sucesor_v  # Suma del valor esperado
+            sucesor_v = self.value(sucesor, next_agentIndex, new_depth)[0]
+            v += probabilidad * sucesor_v  # Suma de todos los valores esperados * probabilidad de que ocurra cada uno
 
         return v, None
 
