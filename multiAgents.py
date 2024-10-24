@@ -347,7 +347,7 @@ def betterEvaluationFunction(currentGameState):
     """
     Your extreme, unstoppable evaluation function (question 5).
     """
-    # Información útil que podemos extraer del estado actual
+    # Información útil del estado actual
     pacmanPos = currentGameState.getPacmanPosition()
     foodGrid = currentGameState.getFood()
     ghostStates = currentGameState.getGhostStates()
@@ -360,7 +360,7 @@ def betterEvaluationFunction(currentGameState):
     else:
         min_food_distance = 0  # Si no queda comida, distancia mínima es 0
 
-    # 2. Calcular la distancia a los fantasmas y manejar el estado de asustado
+    # Calcular la distancia a los fantasmas y manejar el estado de asustado
     min_ghost_distance = float('inf')
     ghost_penalty = 0
     for i, ghost in enumerate(ghostStates):
@@ -376,17 +376,17 @@ def betterEvaluationFunction(currentGameState):
     if min_ghost_distance < 2:
         ghost_penalty -= 1000  # Gran penalización si estamos muy cerca de un fantasma peligroso
 
-    # 3. Considerar la cantidad de comida restante
+    # Considerar la cantidad de comida restante
     remaining_food = currentGameState.getNumFood()
 
-    # 4. Considerar las cápsulas de energía
+    # Considerar las cápsulas de energía
     capsules = currentGameState.getCapsules()
     num_capsules = len(capsules)
     capsule_bonus = 0
     if num_capsules > 0:
         capsule_bonus = 100 / min(manhattanDistance(pacmanPos, capsule) for capsule in capsules)
 
-    # 5. Calcular la puntuación final
+    # Calcular la puntuación final
     score = currentGameState.getScore()
     evaluation = (
             score  # Valor del estado actual
