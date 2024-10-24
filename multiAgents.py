@@ -368,7 +368,7 @@ def betterEvaluationFunction(currentGameState):
         ghost_distance = manhattanDistance(pacmanPos, ghostPos)
 
         if scaredTimes[i] > 0:  # El fantasma está asustado, podemos ir a por él
-            ghost_penalty += 200 / (ghost_distance + 1)  # Más cerca = más incentivo
+            ghost_penalty += 450 / (ghost_distance + 1)  # Más cerca = más incentivo
         else:  # El fantasma no está asustado, hay que evitarlo
             min_ghost_distance = min(min_ghost_distance, ghost_distance)
 
