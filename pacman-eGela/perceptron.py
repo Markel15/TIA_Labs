@@ -60,7 +60,7 @@ class PerceptronClassifier:
         for iteration in range(self.max_iterations):
             print("Starting iteration ", iteration, "...")
             for i in range(len(trainingData)):  # training data
-                pdb.set_trace()  # esto es un break point para que puedas comprobar el formato de los datos
+                # pdb.set_trace()  # esto es un break point para que puedas comprobar el formato de los datos
                 ########################################################################################
                 # 1. i es el indice de un ejemplo (un item, f(x) de un ejemplo) del conjunto de entrenamiento.
                 # 2. Asi pues, en cada vuelta de este loop se trata un solo ejemplo
@@ -71,7 +71,19 @@ class PerceptronClassifier:
                 #          Recordad tambien que es una clasificacion multiclase en este caso. Hay tantas clases como nos marca el atributo self.legalLabels
                 #########################################################################################
                 "*** YOUR CODE HERE ***"
-                util.raiseNotDefined()
+                datum = trainingData[i]
+                true_label = trainingLabels[i]
+
+                # Compute the predicted label
+                scores = {label: self.weights[label] * datum for label in self.legalLabels}
+                predicted_label = max(scores, key=scores.get)
+
+                # Update weights if prediction is incorrect
+                if predicted_label != true_label:
+                    # Update the weights for the true label
+                    self.weights[true_label] += datum
+                    # Update the weights for the predicted label
+                    self.weights[predicted_label] -= datum
 
     def classify(self, data):
         """
@@ -95,6 +107,6 @@ class PerceptronClassifier:
         featuresWeights = []
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        featuresWeights = self.weights[label].sortedKeys()[:100]
 
         return featuresWeights

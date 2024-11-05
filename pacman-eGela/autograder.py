@@ -12,7 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
-import imp
+import importlib
 import optparse
 import os
 import random
@@ -125,8 +125,15 @@ def setModuleName(module, filename):
 
 
 def loadModuleFile(moduleName, filePath):
-    with open(filePath, 'r') as f:
-        return imp.load_module(moduleName, f, f"{moduleName}.py", (".py", "r", imp.PY_SOURCE))
+    # Create a module spec from the file path
+    spec = importlib.util.spec_from_file_location(moduleName, filePath)
+    # Create a new module based on the spec
+    module = importlib.util.module_from_spec(spec)
+    # Register the module in sys.modules
+    sys.modules[moduleName] = module
+    # Execute the module to load its contents
+    spec.loader.exec_module(module)
+    return module
 
 
 def readFile(path, root=""):
