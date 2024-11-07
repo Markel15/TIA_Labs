@@ -48,5 +48,17 @@ class PerceptronClassifierPacman(PerceptronClassifier):
         for iteration in range(self.max_iterations):
             print("Starting iteration ", iteration, "...")
             for i in range(len(trainingData)):
-                "*** YOUR CODE HERE ***"
-                util.raiseNotDefined()
+                datum, legalMoves = trainingData[i]  # trainingData es una tupla con los features y legalMoves
+                trueLabel = trainingLabels[i]
+
+                # Clasificar el estado basado en los pesos actuales
+                predictedLabel = self.classify([(datum, legalMoves)])[0]
+
+                # Si la prediccion es incorrecta actualizar los pesos
+                if predictedLabel != trueLabel:
+                    # Actualizar pesos de la accion corercta (acercar: w=w+f(s,a))
+                    for feature in datum[trueLabel]:
+                        self.weights[feature] += datum[trueLabel][feature]
+                    # Actualizar pesos de la accion predicha (alejar: w=w−f(s,a′))
+                    for feature in datum[predictedLabel]:
+                        self.weights[feature] -= datum[predictedLabel][feature]
