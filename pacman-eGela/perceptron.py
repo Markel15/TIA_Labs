@@ -71,19 +71,19 @@ class PerceptronClassifier:
                 #          Recordad tambien que es una clasificacion multiclase en este caso. Hay tantas clases como nos marca el atributo self.legalLabels
                 #########################################################################################
                 "*** YOUR CODE HERE ***"
-                datum = trainingData[i]
+                instancia = trainingData[i]
                 true_label = trainingLabels[i]
 
-                # Compute the predicted label
-                scores = {label: self.weights[label] * datum for label in self.legalLabels}
+                # Cálculo de la predicción
+                scores = {label: self.weights[label] * instancia for label in self.legalLabels}
                 predicted_label = max(scores, key=scores.get)
 
-                # Update weights if prediction is incorrect
+                # Actualizar pesos si la prediccion es incorrecta
                 if predicted_label != true_label:
-                    # Update the weights for the true label
-                    self.weights[true_label] += datum
-                    # Update the weights for the predicted label
-                    self.weights[predicted_label] -= datum
+                    # Actualizar peso de true label wy=wy+f
+                    self.weights[true_label] += instancia
+                    # Actualizar peso de label predicha wy′=wy′−f
+                    self.weights[predicted_label] -= instancia
 
     def classify(self, data):
         """
