@@ -40,11 +40,9 @@ class RegressionModel(object):
             Como es un modelo de regresion, cada valor y tambien tendra un unico valor
         """
         "*** YOUR CODE HERE ***"
-
-
-
-
-
+        primera_capa = nn.ReLU(nn.AddBias(nn.Linear(x, self.w0),self.b0))
+        ultima_capa = nn.ReLU(nn.AddBias(nn.Linear(primera_capa, self.w1), self.b1))
+        return ultima_capa
 
 
     def get_loss(self, x, y):
