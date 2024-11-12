@@ -22,9 +22,12 @@ class RegressionModel(object):
         #
         "*** YOUR CODE HERE ***"
 
+        self.w0 = nn.Parameter(1, 5)  # 1 input de parametro y 5 neuronas (salidas) w0 es un vector
+        self.b0 = nn.Parameter(1, 5)  # b0 vector de bias a cada neurona (5 bias)
+        self.w1 = nn.Parameter(5, 1)  # 5 inputs y 1 output, conexiones a la ultima neurona
+        self.b1 = nn.Parameter(1, 1)
 
-
-
+        self.params = [self.w0, self.b0, self.w1, self.b1]
 
     def run(self, x):
         """
