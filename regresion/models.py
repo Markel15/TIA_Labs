@@ -21,6 +21,8 @@ class RegressionModel(object):
         # self.lr = -0.01
         #
         "*** YOUR CODE HERE ***"
+        self.batch_size = 20
+        self.lr = -0.01
 
         self.w0 = nn.Parameter(1, 5)  # 1 input de parametro y 5 neuronas (salidas) w0 es un vector
         self.b0 = nn.Parameter(1, 5)  # b0 vector de bias a cada neurona (5 bias)
