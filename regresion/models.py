@@ -21,15 +21,17 @@ class RegressionModel(object):
         # self.lr = -0.01
         #
         "*** YOUR CODE HERE ***"
-        self.batch_size = 20
+        self.batch_size = 5
         self.lr = -0.01
 
-        self.w0 = nn.Parameter(1, 5)  # 1 input de parametro y 5 neuronas (salidas) w0 es un vector
-        self.b0 = nn.Parameter(1, 5)  # b0 vector de bias a cada neurona (5 bias)
-        self.w1 = nn.Parameter(5, 1)  # 5 inputs y 1 output, conexiones a la ultima neurona
-        self.b1 = nn.Parameter(1, 1)
+        self.w0 = nn.Parameter(1, 150)
+        self.b0 = nn.Parameter(1, 150)
+        self.w1 = nn.Parameter(150, 80)
+        self.b1 = nn.Parameter(1, 80)
+        self.w2 = nn.Parameter(80, 1)
+        self.b2 = nn.Parameter(1, 1)
 
-        self.params = [self.w0, self.b0, self.w1, self.b1]
+        self.params = [self.w0, self.b0, self.w1, self.b1, self.w2, self.b2]
 
     def run(self, x):
         """
@@ -43,9 +45,9 @@ class RegressionModel(object):
         """
         "*** YOUR CODE HERE ***"
         primera_capa = nn.ReLU(nn.AddBias(nn.Linear(x, self.w0),self.b0))
-        ultima_capa = nn.ReLU(nn.AddBias(nn.Linear(primera_capa, self.w1), self.b1))
+        segunda_capa = nn.ReLU(nn.AddBias(nn.Linear(primera_capa, self.w1), self.b1))
+        ultima_capa = nn.AddBias(nn.Linear(segunda_capa, self.w2),self.b2)
         return ultima_capa
-
 
     def get_loss(self, x, y):
         """
@@ -56,26 +58,25 @@ class RegressionModel(object):
             y: a node with shape (batch_size x 1), containing the true y-values
                 to be used for training
         Returns: a loss node
-                ----> ES FACIL COPIA Y PEGA ESTO Y ANNADE LA VARIABLE QUE HACE FALTA PARA CALCULAR EL ERROR 
+                ----> ES FACIL COPIA Y PEGA ESTO Y ANNADE LA VARIABLE QUE HACE FALTA PARA CALCULAR EL ERROR
                 return nn.SquareLoss(self.run(x),ANNADE LA VARIABLE QUE ES NECESARIA AQUI), para medir el error, necesitas comparar el resultado de tu prediccion con .... que?
         """
         "*** YOUR CODE HERE ***"
         predicted_y = self.run(x)
         return nn.SquareLoss(predicted_y, y)  # Comparar con etiqueta real
 
-
     def train(self, dataset):
         """
         Trains the model.
-        
+
         """
-        
+
         batch_size = self.batch_size
         total_loss = 100000
         while total_loss > 0.02:
-            #ITERAR SOBRE EL TRAIN EN LOTES MARCADOS POR EL BATCH SIZE COMO HABEIS HECHO EN LOS OTROS EJERCICIOS
-            #ACTUALIZAR LOS PESOS EN BASE AL ERROR loss = self.get_loss(x, y) QUE RECORDAD QUE GENERA
-            #UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
+            # ITERAR SOBRE EL TRAIN EN LOTES MARCADOS POR EL BATCH SIZE COMO HABEIS HECHO EN LOS OTROS EJERCICIOS
+            # ACTUALIZAR LOS PESOS EN BASE AL ERROR loss = self.get_loss(x, y) QUE RECORDAD QUE GENERA
+            # UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
 
             "*** YOUR CODE HERE ***"
             for x, y in dataset.iterate_once(batch_size):
@@ -86,7 +87,7 @@ class RegressionModel(object):
                     self.params[i].update(gradientes[i], self.lr)
 
 
-            
+
 class DigitClassificationModel(object):
     """
     A model for handwritten digit classification using the MNIST dataset.
@@ -109,10 +110,10 @@ class DigitClassificationModel(object):
         output_size = 10 # TAMANO EQUIVALENTE AL NUMERO DE CLASES DADO QUE QUIERES OBTENER 10 CLASES
         pixel_dim_size = 28
         pixel_vector_length = pixel_dim_size* pixel_dim_size
- 
+
         "*** YOUR CODE HERE ***"
 
-     
+
 
     def run(self, x):
         """
@@ -145,7 +146,7 @@ class DigitClassificationModel(object):
         POR EJEMPLO: [0,0,0,0,0,1,0,0,0,0,0] seria la y correspondiente al 5
                      [0,1,0,0,0,0,0,0,0,0,0] seria la y correspondiente al 1
 
-        EN ESTE CASO ESTAMOS HABLANDO DE MULTICLASS, ASI QUE TIENES QUE CALCULAR 
+        EN ESTE CASO ESTAMOS HABLANDO DE MULTICLASS, ASI QUE TIENES QUE CALCULAR
         Inputs:
             x: a node with shape (batch_size x 784)
             y: a node with shape (batch_size x 10)
@@ -156,7 +157,7 @@ class DigitClassificationModel(object):
                                               # LOS 10 VALORES DEL "COSENO". TENIENDO EL Y REAL POR CADA EJEMPLO
                                               # APLICA SOFTMAX PARA CALCULAR LA PROBABILIDA MAX
                                               # Y ESA SERA SU PREDICCION,
-                                              # LA CLASE QUE MUESTRE EL MAYOR PROBABILIDAD, LA PREDICCION MAS PROBABLE, Y LUEGO LA COMPARARA CON Y 
+                                              # LA CLASE QUE MUESTRE EL MAYOR PROBABILIDAD, LA PREDICCION MAS PROBABLE, Y LUEGO LA COMPARARA CON Y
 
     def train(self, dataset):
         """
@@ -164,7 +165,7 @@ class DigitClassificationModel(object):
         EN ESTE CASO EN VEZ DE PARAR CUANDO EL ERROR SEA MENOR QUE UN VALOR O NO HAYA ERROR (CONVERGENCIA),
         SE PUEDE HACER ALGO SIMILAR QUE ES EN NUMERO DE ACIERTOS. EL VALIDATION ACCURACY
         NO LO TENEIS QUE IMPLEMENTAR, PERO SABED QUE EMPLEA EL RESULTADO DEL SOFTMAX PARA CALCULAR
-        EL NUM DE EJEMPLOS DEL TRAIN QUE SE HAN CLASIFICADO CORRECTAMENTE 
+        EL NUM DE EJEMPLOS DEL TRAIN QUE SE HAN CLASIFICADO CORRECTAMENTE
         """
         batch_size = self.batch_size
         while dataset.get_validation_accuracy() < 0.97:
