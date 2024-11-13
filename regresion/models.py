@@ -60,10 +60,8 @@ class RegressionModel(object):
                 return nn.SquareLoss(self.run(x),ANNADE LA VARIABLE QUE ES NECESARIA AQUI), para medir el error, necesitas comparar el resultado de tu prediccion con .... que?
         """
         "*** YOUR CODE HERE ***"
-
-
-
-
+        predicted_y = self.run(x)
+        return nn.SquareLoss(predicted_y, y)  # Comparar con etiqueta real
 
 
     def train(self, dataset):
@@ -80,9 +78,12 @@ class RegressionModel(object):
             #UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
 
             "*** YOUR CODE HERE ***"
-
-
-
+            for x, y in dataset.iterate_once(batch_size):
+                loss = self.get_loss(x, y)
+                total_loss = nn.as_scalar(loss)
+                gradientes = nn.gradients(loss, self.params)  # devuelve una lista donde cada elemento contiene el gradiente de la perdida con respecto a un parametro.
+                for i in range(len(self.params)):
+                    self.params[i].update(gradientes[i], self.lr)
 
 
             
