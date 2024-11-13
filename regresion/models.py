@@ -112,6 +112,15 @@ class DigitClassificationModel(object):
         pixel_vector_length = pixel_dim_size* pixel_dim_size
 
         "*** YOUR CODE HERE ***"
+        self.batch_size = 5
+        self.lr = -0.01
+
+        self.w0 = nn.Parameter(pixel_vector_length, pixel_dim_size)
+        self.b0 = nn.Parameter(1, pixel_dim_size)
+        self.w1 = nn.Parameter(pixel_dim_size, output_size)
+        self.b1 = nn.Parameter(1, output_size)
+
+        self.params = [self.w0, self.b0, self.w1, self.b1]
 
 
 
@@ -131,7 +140,9 @@ class DigitClassificationModel(object):
             output_size = 10 # TAMANO EQUIVALENTE AL NUMERO DE CLASES DADO QUE QUIERES OBTENER 10 "COSENOS"
         """
         "*** YOUR CODE HERE ***"
-
+        primera_capa = nn.ReLU(nn.AddBias(nn.Linear(x, self.w0), self.b0))
+        ultima_capa = nn.ReLU(nn.AddBias(nn.Linear(primera_capa, self.w1), self.b1))
+        return ultima_capa
 
 
 
@@ -173,7 +184,11 @@ class DigitClassificationModel(object):
             #ACTUALIZAR LOS PESOS EN BASE AL ERROR loss = self.get_loss(x, y) QUE RECORDAD QUE GENERA
             #UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
             "*** YOUR CODE HERE ***"
-
+            for x, y in dataset.iterate_once(batch_size):
+                loss = self.get_loss(x, y)
+                gradientes = nn.gradients(loss, self.params)  # devuelve una lista donde cada elemento contiene el gradiente de la perdida con respecto a un parametro.
+                for i in range(len(self.params)):
+                    self.params[i].update(gradientes[i], self.lr)
 
 
 
