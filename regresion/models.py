@@ -115,9 +115,9 @@ class DigitClassificationModel(object):
         self.batch_size = 5
         self.lr = -0.01
 
-        self.w0 = nn.Parameter(pixel_vector_length, pixel_dim_size)
-        self.b0 = nn.Parameter(1, pixel_dim_size)
-        self.w1 = nn.Parameter(pixel_dim_size, output_size)
+        self.w0 = nn.Parameter(pixel_vector_length, 56)  # 56 = pixel_dim_size * 2
+        self.b0 = nn.Parameter(1, 56)
+        self.w1 = nn.Parameter(56, output_size)
         self.b1 = nn.Parameter(1, output_size)
 
         self.params = [self.w0, self.b0, self.w1, self.b1]
