@@ -67,13 +67,13 @@ class ValueIterationAgent(ValueEstimationAgent):
             new_values = util.Counter()
             for state in self.mdp.getStates():
                 if not self.mdp.isTerminal(state):
-                    # For each state, compute the best value by checking all possible actions
+                    # Por cada estado, calcula el mejor valor comprobando todas las acciones
                     best_value = float('-inf')
                     for action in self.mdp.getPossibleActions(state):
                         q_value = self.computeQValueFromValues(state, action)
                         best_value = max(best_value, q_value)
                     new_values[state] = best_value
-            self.values = new_values  # Update the values after all states are updated
+            self.values = new_values
 
     def getValue(self, state):
         """
@@ -88,10 +88,10 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         "*** YOUR CODE HERE ***"
         q_value = 0
-        # For each possible next state, calculate the expected value of taking the action
+        # Por cada estado siguiente, calcular el valor esperado de la accion
         for next_state, prob in self.mdp.getTransitionStatesAndProbs(state, action):
             reward = self.mdp.getReward(state, action, next_state)
-            # Update q_value based on reward and the value of the next state
+            # Actualizar el q_value basado en la recompensa y el valor del proximo estado
             q_value += prob * (reward + self.discount * self.values[next_state])
         return q_value
 
@@ -111,7 +111,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         best_action = None
         best_q_value = float('-inf')
 
-        # Find the best action by computing Q-value for each action
+        # Encontrar la mejor accion con ayuda del Q-value de cada accion
         for action in self.mdp.getPossibleActions(state):
             q_value = self.computeQValueFromValues(state, action)
             if q_value > best_q_value:
