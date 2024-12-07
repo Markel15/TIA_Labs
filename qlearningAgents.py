@@ -67,14 +67,11 @@ class QLearningAgent(ReinforcementAgent):
         if not legalActions:
             return 0.0
         best_action = None
-        best_value = -99
+        best_value = float('-inf')
         for action in legalActions:
             value = self.getQValue(state, action)
             if value > best_value:
                 best_value = value
-                best_action = action
-            elif value == best_value:
-                best_action = random.choice([action, best_action])  # romper los empates al azar
         return best_value
 
     def computeActionFromQValues(self, state):
@@ -86,7 +83,7 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
         legalActions = self.getLegalActions(state)
         best_action = None
-        best_value = -99
+        best_value = float('-inf')
         for action in legalActions:
             value = self.getQValue(state, action)
             if value > best_value:
